@@ -1,0 +1,40 @@
+import java.net.*;
+
+public class DNSClient {
+    private static final int BUFFER_SIZE = 1024;
+
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Usage: java DNSClient <serverIP> <hostname>");
+            return;
+        }
+
+        String serverIP = args[0];
+        String hostname = args[1];
+
+        try {
+            DatagramSocket clientSocket = new DatagramSocket();
+
+            byte[] sendBuffer = hostname.getBytes();
+
+            InetAddress serverAddress = InetAddress.getByName(serverIP);
+
+            DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, serverAddress, 8888);
+            clientSocket.send(sendPacket);
+
+            byte[] receiveBuffer = new byte[BUFFER_SIZE];
+
+            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            clientSocket.receive(receivePacket);
+
+            String ipAddress = new String(receivePacket.getData()).trim();
+
+            System.out.println("Resolved IP address for " + hostname + ": " + ipAddress);
+
+            clientSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+DNS client 2(b)
